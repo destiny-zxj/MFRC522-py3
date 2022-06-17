@@ -1,5 +1,5 @@
 from time import sleep
-import Rpi.GPIO as GPIO
+import RPi.GPIO as GPIO
 from mfrc522.SimpleMFRC522 import SimpleMFRC522
 
 
