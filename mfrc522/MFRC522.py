@@ -174,7 +174,7 @@ class MFRC522:
 
     def AntennaOn(self):
         temp = self.Read_MFRC522(self.TxControlReg)
-        if (~(temp & 0x03)):
+        if ~(temp & 0x03):
             self.SetBitMask(self.TxControlReg, 0x03)
 
     def AntennaOff(self):
@@ -244,7 +244,7 @@ class MFRC522:
             else:
                 status = self.MI_ERR
 
-        return (status, backData, backLen)
+        return status, backData, backLen
 
     def MFRC522_Request(self, reqMode):
         status = None
@@ -256,10 +256,10 @@ class MFRC522:
         TagType.append(reqMode)
         (status, backData, backBits) = self.MFRC522_ToCard(self.PCD_TRANSCEIVE, TagType)
 
-        if ((status != self.MI_OK) | (backBits != 0x10)):
+        if (status != self.MI_OK) | (backBits != 0x10):
             status = self.MI_ERR
 
-        return (status, backBits)
+        return status, backBits
 
     def MFRC522_Anticoll(self):
         backData = []
@@ -274,7 +274,7 @@ class MFRC522:
 
         (status, backData, backBits) = self.MFRC522_ToCard(self.PCD_TRANSCEIVE, serNum)
 
-        if (status == self.MI_OK):
+        if status == self.MI_OK:
             i = 0
             if len(backData) == 5:
                 for i in range(4):
@@ -284,7 +284,7 @@ class MFRC522:
             else:
                 status = self.MI_ERR
 
-        return (status, backData)
+        return status, backData
 
     def CalulateCRC(self, pIndata):
         self.ClearBitMask(self.DivIrqReg, 0x04)
@@ -300,16 +300,12 @@ class MFRC522:
             i -= 1
             if not ((i != 0) and not (n & 0x04)):
                 break
-        pOutData = []
-        pOutData.append(self.Read_MFRC522(self.CRCResultRegL))
-        pOutData.append(self.Read_MFRC522(self.CRCResultRegM))
+        pOutData = [self.Read_MFRC522(self.CRCResultRegL), self.Read_MFRC522(self.CRCResultRegM)]
         return pOutData
 
     def MFRC522_SelectTag(self, serNum):
         backData = []
-        buf = []
-        buf.append(self.PICC_SElECTTAG)
-        buf.append(0x70)
+        buf = [self.PICC_SElECTTAG, 0x70]
 
         for i in range(5):
             buf.append(serNum[i])
@@ -326,13 +322,11 @@ class MFRC522:
             return 0
 
     def MFRC522_Auth(self, authMode, BlockAddr, Sectorkey, serNum):
-        buff = []
+        buff = [authMode, BlockAddr]
 
         # First byte should be the authMode (A or B)
-        buff.append(authMode)
 
         # Second byte is the trailerBlock (usually 7)
-        buff.append(BlockAddr)
 
         # Now we need to append the authKey which usually is 6 bytes of 0xFF
         for i in range(len(Sectorkey)):
@@ -358,9 +352,7 @@ class MFRC522:
         self.ClearBitMask(self.Status2Reg, 0x08)
 
     def MFRC522_Read(self, blockAddr):
-        recvData = []
-        recvData.append(self.PICC_READ)
-        recvData.append(blockAddr)
+        recvData = [self.PICC_READ, blockAddr]
         pOut = self.CalulateCRC(recvData)
         recvData.append(pOut[0])
         recvData.append(pOut[1])
@@ -375,9 +367,7 @@ class MFRC522:
             return None
 
     def MFRC522_Write(self, blockAddr, writeData):
-        buff = []
-        buff.append(self.PICC_WRITE)
-        buff.append(blockAddr)
+        buff = [self.PICC_WRITE, blockAddr]
         crc = self.CalulateCRC(buff)
         buff.append(crc[0])
         buff.append(crc[1])

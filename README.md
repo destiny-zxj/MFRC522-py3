@@ -33,4 +33,4 @@ sudo python3 setup.py install
 
 ## Usage
 
-> example.py
+> demo
