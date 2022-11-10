@@ -1,6 +1,6 @@
 # Code by Simon Monk https://github.com/simonmonk/
 
-from . import MFRC522
+from MFRC522 import MFRC522
 
 
 class SimpleMFRC522:
