@@ -1,6 +1,6 @@
 from time import sleep
 import RPi.GPIO as GPIO
-from mfrc522.SimpleMFRC522 import SimpleMFRC522
+from src.mfrc522.SimpleMFRC522 import SimpleMFRC522
 
 
 reader = SimpleMFRC522()
